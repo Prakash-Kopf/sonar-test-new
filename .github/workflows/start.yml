@@ -23,19 +23,18 @@ jobs:
             -Dsonar.token=%SONAR_TOKEN%
         shell: cmd
 
-      - name: Stop and Remove existing container (if any)
-        run: |
-          if (docker ps -q -f "name=myapp1") {
-            docker stop myapp1
-            docker rm myapp1
-          } else {
-            Write-Host "No existing container"
-          }
-        shell: powershell
-
-      - name: Build and Run Docker Container
-        run: |
-          Start-Process docker -ArgumentList "build -t myapp1 ." -Verb RunAs
-          Start-Process docker -ArgumentList "run -d -p 8090:80 --name myapp1 myapp1" -Verb RunAs
-        shell: powershell
+      
+      - name: SSH to EC2 and Build + Run Docker
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/app-new/sonar-test-new
+            git pull origin main
+            docker stop myapp1 || true
+            docker rm myapp1 || true
+            docker build -t myapp1 .
+            docker run -d -p 8090:80 --name myapp1 myapp1
         
