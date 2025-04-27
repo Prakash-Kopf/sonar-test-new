@@ -32,8 +32,7 @@ jobs:
     - name: Deploy to IIS
       shell: powershell
       run: |
-        Remove-Item -Path "C:\inetpub\wwwroot\mysite\*" -Recurse -Force -ErrorAction SilentlyContinue
-        Get-ChildItem -Path "$env:GITHUB_WORKSPACE" -Exclude ".git", ".github" | Copy-Item -Destination "C:\inetpub\wwwroot\mysite" -Recurse -Force
+        Copy-Item -Path "$(pwd)\published\*" -Destination "C:\myapp\app-new\sonar-test-new\" -Recurse
 
     - name: Start IIS Website
       shell: powershell
