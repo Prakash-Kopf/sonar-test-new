@@ -28,8 +28,7 @@ jobs:
       run: |
         
         Remove-Item -Recurse -Force "C:\inetpub\wwwroot\mysite\*" -ErrorAction SilentlyContinue
-        Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination "C:\inetpub\wwwroot\mysite\" -Recurse -Force
-
+        Get-ChildItem -Path "$env:GITHUB_WORKSPACE" -Exclude ".git", ".github" | Copy-Item -Destination "C:\inetpub\wwwroot\mysite" -Recurse -Force
         Import-Module WebAdministration
         Stop-Website -Name "mysite"
         Start-Website -Name "mysite"
