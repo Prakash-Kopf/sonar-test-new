@@ -24,17 +24,24 @@ jobs:
         shell: cmd
 
       
-      - name: SSH to EC2 and Build + Run Docker
+  deploy-to-ec2:
+    needs: sonar-scan  # Wait for scan to finish
+    runs-on: ubuntu-latest  # Deployment should be Linux runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH to EC2 and Deploy Docker
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.EC2_PUBLIC_IP }}
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             cd /home/ubuntu/app-new/sonar-test-new
             git pull origin main
             docker stop myapp1 || true
             docker rm myapp1 || true
             docker build -t myapp1 .
-            docker run -d -p 8090:80 --name myapp1 myapp1
-        
+            docker run -d -p 8090:80 --name myapp1 myapp1  
