@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t myapp1 .
+          Start-Process docker -ArgumentList "build -t myapp1 ." -Verb RunAs
         shell: powershell
 
       - name: Stop Existing Container (if running)
