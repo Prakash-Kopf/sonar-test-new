@@ -24,12 +24,18 @@ jobs:
           -Dsonar.login=%SONAR_TOKEN%
       shell: cmd
 
-    - name: Deploy to IIS
-      run: |
-        
-        Remove-Item -Recurse -Force "C:\inetpub\wwwroot\mysite\*" -ErrorAction SilentlyContinue
-        Get-ChildItem -Path "$env:GITHUB_WORKSPACE" -Exclude ".git", ".github" | Copy-Item -Destination "C:\inetpub\wwwroot\mysite" -Recurse -Force
-        Import-Module WebAdministration
-        Stop-Website -Name "mysite"
-        Start-Website -Name "mysite"
+    - name: Stop IIS Website
       shell: powershell
+      run: |
+        Stop-Website -Name "mysite"
+
+    - name: Deploy to IIS
+      shell: powershell
+      run: |
+        Remove-Item -Path "C:\inetpub\wwwroot\mysite\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Get-ChildItem -Path "$env:GITHUB_WORKSPACE" -Exclude ".git", ".github" | Copy-Item -Destination "C:\inetpub\wwwroot\mysite" -Recurse -Force
+
+    - name: Start IIS Website
+      shell: powershell
+      run: |
+        Start-Website -Name "mysite"
