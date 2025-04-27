@@ -25,8 +25,9 @@ jobs:
 
       
   deploy-to-ec2:
-    needs: sonar-scan  # Wait for scan to finish
-    runs-on: ubuntu-latest  # Deployment should be Linux runner
+    needs: build  # ✅ Corrected here (depends on build job)
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,4 +45,4 @@ jobs:
             docker stop myapp1 || true
             docker rm myapp1 || true
             docker build -t myapp1 .
-            docker run -d -p 8090:80 --name myapp1 myapp1  
+            docker run -d -p 8090:80 --name myapp1 myapp1
