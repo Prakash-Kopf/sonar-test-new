@@ -21,7 +21,7 @@ jobs:
       run: |
         sonar-scanner.bat ^
           -Dsonar.host.url=%SONAR_HOST_URL% ^
-          -Dsonar.login=%SONAR_TOKEN%
+          -Dsonar.token=%SONAR_TOKEN%
       shell: cmd
 
     - name: Deploy to IIS
