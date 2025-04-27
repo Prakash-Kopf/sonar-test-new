@@ -1,4 +1,4 @@
-name: CI/CD with SonarQube and IIS Deployment
+name: CI/CD for HTML App - Docker
 
 on:
   push:
@@ -6,35 +6,35 @@ on:
       - main
 
 jobs:
-  build-deploy:
-    name: Build and Deploy to IIS
-    runs-on: self-hosted  # Windows runner
+  build:
+    runs-on: [self-hosted, windows]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: SonarQube Scan (Windows Local)
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: |
-        sonar-scanner.bat ^
-          -Dsonar.host.url=%SONAR_HOST_URL% ^
-          -Dsonar.login=%SONAR_TOKEN%
-      shell: cmd
+      - name: SonarQube Scan (Windows Local)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          sonar-scanner.bat ^
+            -Dsonar.host.url=%SONAR_HOST_URL% ^
+            -Dsonar.token=%SONAR_TOKEN%
+        shell: cmd
 
-    - name: Stop IIS Website
-      shell: powershell
-      run: |
-        Stop-Website -Name "mysite"
+      - name: Build Docker Image
+        run: |
+          docker build -t myapp1 .
+        shell: powershell
 
-    - name: Deploy to IIS
-      shell: powershell
-      run: |
-        Copy-Item -Path "$(pwd)\published\*" -Destination "C:\myapp\app-new\sonar-test-new\" -Recurse
+      - name: Stop Existing Container (if running)
+        run: |
+          docker stop myapp1 || echo "No existing container"
+          docker rm myapp1 || echo "No container to remove"
+        shell: powershell
 
-    - name: Start IIS Website
-      shell: powershell
-      run: |
-        Start-Website -Name "mysite"
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 8090:80 --name myapp1 myapp1
+        shell: powershell
