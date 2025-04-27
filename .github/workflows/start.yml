@@ -36,6 +36,6 @@ jobs:
       - name: Build and Run Docker Container
         run: |
           Start-Process docker -ArgumentList "build -t myapp1 ." -Verb RunAs
-          docker run -d -p 8090:80 --name myapp1 myapp1
+          Start-Process docker -ArgumentList "run -d -p 8090:80 --name myapp1 myapp1" -Verb RunAs
         shell: powershell
         
