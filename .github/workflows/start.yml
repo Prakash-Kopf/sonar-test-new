@@ -23,18 +23,19 @@ jobs:
             -Dsonar.token=%SONAR_TOKEN%
         shell: cmd
 
-      - name: Build Docker Image
+      - name: Stop and Remove existing container (if any)
         run: |
-          Start-Process docker -ArgumentList "build -t myapp1 ." -Verb RunAs
+          if (docker ps -q -f "name=myapp1") {
+            docker stop myapp1
+            docker rm myapp1
+          } else {
+            Write-Host "No existing container"
+          }
         shell: powershell
 
-      - name: Stop Existing Container (if running)
+      - name: Build and Run Docker Container
         run: |
-          docker stop myapp1 || echo "No existing container"
-          docker rm myapp1 || echo "No container to remove"
-        shell: powershell
-
-      - name: Run Docker Containers
-        run: |
+          docker build -t myapp .
           docker run -d -p 8090:80 --name myapp1 myapp1
         shell: powershell
+        
