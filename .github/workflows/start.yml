@@ -29,6 +29,6 @@ jobs:
         Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination "C:\inetpub\wwwroot\" -Recurse -Force
 
         Import-Module WebAdministration
-        Stop-Website -Name "mysite"
-        Start-Website -Name "mysite"
+        Stop-Website -Name "Default Web Site"
+        Start-Website -Name "Default Web Site"
       shell: powershell
