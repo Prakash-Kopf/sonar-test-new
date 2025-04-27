@@ -25,7 +25,7 @@ jobs:
 
       
   deploy-to-ec2:
-    needs: build  # ✅ Corrected here (depends on build job)
+    needs: build  
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +41,8 @@ jobs:
           port: 22
           script: |
             cd /home/ubuntu/app-new/sonar-test-new
-            sudo git pull origin main
+            sudo git push origin main
+            
             sudo docker stop myapp1 || true
             sudo docker rm myapp1 || true
             sudo docker build -t myapp1 .
